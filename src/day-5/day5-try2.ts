@@ -1,16 +1,17 @@
 export const makeMapFn = (input: string[]): ((num: number) => number) => {
 
-  const map: Record<number, number> = {}
-
-  for (const line of input) {
-    const [destination, source, length] = line.split(" ").map(it => parseInt(it))
-    for (let i=0; i<length; i++) {
-      map[source+i] = destination+i
-    }
-  }
-
   return (num: number) => {
-    return map[num] ?? num
+    let loc = num;
+    for (const line of input) {
+      const [destination, source, length] = line.split(" ").map(it => parseInt(it))
+      if (num >= source && num <= source + length) {
+        const distance = num-source;
+        loc = destination+distance
+        break;
+      }
+    }
+
+    return loc;
   }
 }
 
@@ -51,4 +52,33 @@ export const extractSeeds = (inputTxt: string): number[] => {
     .split('seeds: ')[1]
     .split(' ')
     .map(it => parseInt(it))
+}
+
+export const extractSeedsPart2 = (inputTxt: string): number[] => {
+
+  const pairs = getPairsPart2(inputTxt)
+
+  let res = []
+  for (const pair of pairs) {
+    const [start, length] = pair
+    for (let i=start; i<start+length; i++) {
+      res.push(i)
+    }
+  }
+
+  return res;
+}
+
+export const getPairsPart2 = (inputTxt: string): number[][] => {
+  const seedNumbers = inputTxt
+    .split('\n')[0]
+    .split('seeds: ')[1]
+    .split(' ')
+    .map(it => parseInt(it))
+
+  return seedNumbers.reduce((acc, val, i, initial) => {
+    if (i % 2 === 0)
+      acc.push(initial.slice(i, i + 2));
+    return acc;
+  }, []);
 }
