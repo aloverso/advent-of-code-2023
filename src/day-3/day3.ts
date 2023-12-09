@@ -1,4 +1,3 @@
-import {createJestPreset} from "ts-jest";
 
 type Num = {
   num: number;
@@ -30,7 +29,7 @@ export const parseNums = (line: string): Num[] => {
 export const isSymbol = (val: string): boolean => {
   const replaced = val
     .replace(/\d/g, '')
-    .replace(/[A-Za-z]/g, '')
+    // .replace(/[A-Za-z]/g, '')
     .replace(/\./g, '')
 
   return replaced.length > 0
@@ -48,7 +47,7 @@ export const hasAdjacentSymbol = (num: Num, lineAbove: string, line: string, lin
   }
 
   const indices=[]
-  for (let i=-1; i<=num.length+1; i++) {
+  for (let i=-1; i<num.length+1; i++) {
     if (num.index + i < 0) {
       continue;
     }
@@ -77,13 +76,16 @@ export const sumNumbers = (input: string): number => {
   for (let i=0; i<lines.length; i++) {
     const line = lines[i]
     const nums = parseNums(line)
+    // console.log(i, nums)
     for (const num of nums) {
       const lineBefore = i==0 ? '' : lines[i-1]
       const lineAfter = i==lines.length-1 ? '' : lines[i+1]
       if (hasAdjacentSymbol(num, lineBefore, line, lineAfter)) {
+        // console.log('has symbol:', num.num)
         sum += num.num
       }
     }
+    console.log(i, 'running sum', sum)
   }
 
   return sum
