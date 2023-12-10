@@ -5,6 +5,10 @@ type Num = {
   length: number
 }
 
+/*
+line: one string with numbers separated by . and symbols
+returns: list of objects for each number in the line, with its index and length
+ */
 export const parseNums = (line: string): Num[] => {
   const numbers = line
     .replace(/\D/g, '.')
@@ -26,6 +30,10 @@ export const parseNums = (line: string): Num[] => {
   return nums
 }
 
+/*
+val: input string single character
+returns: false if val is alphanumeric or . and true otherwise
+ */
 export const isSymbol = (val: string): boolean => {
   const replaced = val
     .replace(/\d/g, '')
@@ -35,6 +43,13 @@ export const isSymbol = (val: string): boolean => {
   return replaced.length > 0
 }
 
+/*
+num: a single Num object with a number, index, and length
+lineAbove: string for line above num appears, or empty string
+line: string where line appears
+lineBelow: string for line below num appears, or empty string
+returns: true if num has adjacent symbol next to, above, below, or diagonally
+ */
 export const hasAdjacentSymbol = (num: Num, lineAbove: string, line: string, lineBelow: string): boolean => {
   // test same row
 
@@ -72,6 +87,10 @@ export const hasAdjacentSymbol = (num: Num, lineAbove: string, line: string, lin
   return false
 }
 
+/*
+input: multiline string
+returns: sum of all numbers with adjacent symbols
+ */
 export const sumNumbers = (input: string): number => {
   const lines = input.split('\n')
   let sum = 0
