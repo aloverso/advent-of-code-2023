@@ -1,5 +1,15 @@
-import {hasAdjacentSymbol, isSymbol, parseNums, sumNumbers} from "./day3";
+import {
+  getAdjacentNumbers,
+  getNumber,
+  hasAdjacentSymbol,
+  isNumber,
+  isSymbol,
+  parseGears,
+  parseNums, sumGears,
+  sumNumbers
+} from "./day3";
 import path from "node:path";
+import {parseGame} from "../day-2/day2";
 const fs = require('fs')
 
 describe('day 3', () => {
@@ -243,6 +253,75 @@ describe('day 3', () => {
 
   it('gets answer', () => {
     const input = fs.readFileSync(path.join(__dirname, 'input.txt')).toString();
-    console.log(sumNumbers(input)) // 517025 wrong // 519229 wrong //
+    console.log(sumNumbers(input)) // 517025 wrong // 519229 wrong // 517021
+  })
+
+  describe('part 2', () => {
+    it('parses gears', () => {
+      expect(parseGears('*123=.*..*23*%')).toEqual([
+        { index: 0 },
+        { index: 6 },
+        { index: 9 },
+        { index: 12 }
+      ])
+    })
+
+    it('determines is number', () => {
+      expect(isNumber('*')).toEqual(false)
+      expect(isNumber('1')).toEqual(true)
+      expect(isNumber('2')).toEqual(true)
+      expect(isNumber('0')).toEqual(true)
+      expect(isNumber('9')).toEqual(true)
+      expect(isNumber('/')).toEqual(false)
+      expect(isNumber('\\')).toEqual(false)
+      expect(isNumber('a')).toEqual(false)
+      expect(isNumber('.')).toEqual(false)
+    })
+
+    it('gets number from a line where part of it exists at an index', () => {
+      expect(getNumber('.1.56*..', 4)).toEqual({ num: 56, index: 3, length: 2 })
+      expect(getNumber('&.&56*..', 3)).toEqual({ num: 56, index: 3, length: 2 })
+    })
+
+    it('gets adjacent numbers for a gear', () => {
+      expect(getAdjacentNumbers({ index: 5 },
+        '.......',
+        '..617*..',
+        '.....*.')).toEqual([617])
+      expect(getAdjacentNumbers({ index: 5 },
+        '.....56.',
+        '..617*..',
+        '.....*.')).toEqual([617, 56])
+      expect(getAdjacentNumbers({ index: 5 },
+        '56......',
+        '..617*..',
+        '.....67.')).toEqual([617, 67])
+      expect(getAdjacentNumbers({ index: 5 },
+        '56.......',
+        '.....*617',
+        '...4.....')).toEqual([617])
+      expect(getAdjacentNumbers({ index: 5 },
+        '56.......',
+        '.....*617',
+        '...44....')).toEqual([617, 44])
+      expect(getAdjacentNumbers({ index: 5 },
+        '11.56.56.',
+        '.....*...',
+        '.........')).toEqual([56,56])
+      expect(getAdjacentNumbers({ index: 5 },
+        '11.......',
+        '.....*...',
+        '...56.56.')).toEqual([56,56])
+    })
+
+    it('sums numbers where gears are adjacent to 2 numbers only', () => {
+      const input = fs.readFileSync(path.join(__dirname, 'test-input.txt')).toString();
+      expect(sumGears(input)).toEqual(467835)
+    })
+
+    it('gets answer', () => {
+      const input = fs.readFileSync(path.join(__dirname, 'input.txt')).toString();
+      console.log(sumGears(input))
+    })
   })
 })

@@ -5,10 +5,10 @@ type Num = {
   length: number
 }
 
-/*
-line: one string with numbers separated by . and symbols
-returns: list of objects for each number in the line, with its index and length
- */
+type Gear = {
+  index: number;
+}
+
 export const parseNums = (line: string): Num[] => {
   const numbers = line
     .replace(/\D/g, '.')
@@ -32,10 +32,20 @@ export const parseNums = (line: string): Num[] => {
   return nums
 }
 
-/*
-val: input string single character
-returns: false if val is alphanumeric or . and true otherwise
- */
+export const parseGears = (line: string): Gear[] => {
+  let lastIndex=-2
+  const gears: Gear[] = []
+
+  while (lastIndex !== -1) {
+    const index = line.indexOf('*', lastIndex+1)
+    lastIndex = index
+    if (index > -1) {
+      gears.push({ index: index })
+    }
+  }
+  return gears
+}
+
 export const isSymbol = (val: string): boolean => {
   const replaced = val
     .replace(/\d/g, '')
@@ -45,13 +55,13 @@ export const isSymbol = (val: string): boolean => {
   return replaced.length > 0
 }
 
-/*
-num: a single Num object with a number, index, and length
-lineAbove: string for line above num appears, or empty string
-line: string where line appears
-lineBelow: string for line below num appears, or empty string
-returns: true if num has adjacent symbol next to, above, below, or diagonally
- */
+export const isNumber = (val: string): boolean => {
+  const replaced = val
+    .replace(/\D/g, '')
+
+  return replaced.length > 0
+}
+
 export const hasAdjacentSymbol = (num: Num, lineAbove: string, line: string, lineBelow: string): boolean => {
   // test same row
 
@@ -89,10 +99,99 @@ export const hasAdjacentSymbol = (num: Num, lineAbove: string, line: string, lin
   return false
 }
 
-/*
-input: multiline string
-returns: sum of all numbers with adjacent symbols
- */
+export const getNumber = (line: string, indexWhereNumber: number): Num => {
+  const replaced = line
+    .replace(/\D/g, '.')
+
+  let foundWholeNumber = false;
+  let number = replaced[indexWhereNumber]
+  let forwardIndex = indexWhereNumber+1
+  let backwardIndex = indexWhereNumber-1
+  while (!foundWholeNumber) {
+    let foundThisRound = false
+    if (replaced[forwardIndex] && replaced[forwardIndex] !== '.') {
+      number = `${number}${replaced[forwardIndex]}`
+      forwardIndex+=1
+      foundThisRound = true
+    }
+    if (replaced[backwardIndex] && replaced[backwardIndex] !== '.') {
+      number = `${replaced[backwardIndex]}${number}`
+      backwardIndex-=1
+      foundThisRound = true
+    }
+    if (!foundThisRound) {
+      foundWholeNumber = true
+    }
+  }
+
+  return {
+    num: parseInt(number),
+    length: number.length,
+    index: backwardIndex+1
+  }
+}
+
+export const getAdjacentNumbers = (gear: Gear, lineAbove: string, line: string, lineBelow: string): number[] => {
+  const adjacentNumbers: number[] = []
+
+  // test same row
+
+  // before gear
+  if (gear.index > 0 && isNumber(line[gear.index-1])) {
+    adjacentNumbers.push(getNumber(line, gear.index-1).num)
+  }
+  // after symbol
+  if (line.length >= gear.index+1 && isNumber(line[gear.index+1])) {
+
+    adjacentNumbers.push(getNumber(line, gear.index+1).num)
+  }
+
+  // get indices to test on lines above and below
+  const indices=[]
+  for (let i=-1; i<2; i++) {
+    if (gear.index + i < 0) {
+      continue;
+    }
+    if (gear.index + i >= line.length) {
+      continue;
+    }
+    indices.push(gear.index + i)
+  }
+
+
+  // test row above
+  if (lineAbove) {
+    let lastNumberLength = 0
+    let lastNumberIndex = 0
+    for (const index of indices) {
+      if (index < lastNumberIndex+lastNumberLength) continue;
+      if (isNumber(lineAbove[index])) {
+        const num = getNumber(lineAbove, index)
+        adjacentNumbers.push(num.num)
+        lastNumberIndex = num.index
+        lastNumberLength = num.length
+      }
+    }
+  }
+
+  // test row below
+  if (lineBelow) {
+    let lastNumberLength = 0
+    let lastNumberIndex = 0
+    for (const index of indices) {
+      if (index < lastNumberIndex+lastNumberLength) continue;
+      if (isNumber(lineBelow[index])) {
+        const num = getNumber(lineBelow, index)
+        adjacentNumbers.push(num.num)
+        lastNumberIndex = num.index
+        lastNumberLength = num.length
+      }
+    }
+  }
+
+  return adjacentNumbers
+}
+
 export const sumNumbers = (input: string): number => {
   const lines = input.split('\n')
   let sum = 0
@@ -104,6 +203,25 @@ export const sumNumbers = (input: string): number => {
       const lineAfter = i==lines.length-1 ? '' : lines[i+1]
       if (hasAdjacentSymbol(num, lineBefore, line, lineAfter)) {
         sum += num.num
+      }
+    }
+  }
+
+  return sum
+}
+
+export const sumGears = (input: string): number => {
+  const lines = input.split('\n')
+  let sum = 0
+  for (let i=0; i<lines.length; i++) {
+    const line = lines[i]
+    const gears = parseGears(line)
+    for (const gear of gears) {
+      const lineBefore = i==0 ? '' : lines[i-1]
+      const lineAfter = i==lines.length-1 ? '' : lines[i+1]
+      const adjacentNumbers = getAdjacentNumbers(gear, lineBefore, line, lineAfter)
+      if (adjacentNumbers.length === 2) {
+        sum += adjacentNumbers[0] * adjacentNumbers[1]
       }
     }
   }
