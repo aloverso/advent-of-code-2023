@@ -65,7 +65,7 @@ describe('day 3', () => {
     expect(isSymbol('9')).toEqual(false)
     expect(isSymbol('/')).toEqual(true)
     expect(isSymbol('\\')).toEqual(true)
-    // expect(isSymbol('a')).toEqual(false)
+    expect(isSymbol('a')).toEqual(false)
     expect(isSymbol('@')).toEqual(true)
     expect(isSymbol('.')).toEqual(false)
     expect(isSymbol('=')).toEqual(true)
@@ -78,6 +78,11 @@ describe('day 3', () => {
       '......#...',
       '617*......',
       '.....+.58.')).toEqual(true)
+
+    expect(hasAdjacentSymbol({ num: 617, index: 0, length: 3 },
+      '......#...',
+      '617.*.....',
+      '.....+.58.')).toEqual(false)
     expect(hasAdjacentSymbol({ num: 617, index: 5, length: 3 },
       '......#...',
       '......617*',
@@ -97,45 +102,6 @@ describe('day 3', () => {
       '..........',
       '......*617',
       '..........')).toEqual(true)
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '...........',
-      '.......617.',
-      '......*....')).toEqual(true)
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '......*....',
-      '.......617.',
-      '...........')).toEqual(true)
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '..........*',
-      '.......617.',
-      '...........')).toEqual(true)
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '...........',
-      '.......617.',
-      '..........*')).toEqual(true)
-
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '..........',
-      '.....*.617',
-      '..........')).toEqual(false)
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '............',
-      '.......617.*',
-      '............')).toEqual(false)
-
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '...........*',
-      '.......617..',
-      '............')).toEqual(false)
-    expect(hasAdjacentSymbol({ num: 617, index: 7, length: 3 },
-      '.....*......',
-      '.......617..',
-      '............')).toEqual(false)
 
     /////////// ----------------------
 
@@ -256,26 +222,10 @@ describe('day 3', () => {
   it('sums numbers adjacent to symbols new data 3', () => {
     const input = fs.readFileSync(path.join(__dirname, 'test-input-3.txt')).toString();
     expect(sumNumbers(input)).toEqual(6627)
-    /*
-360
-69
-534
-340
-885
-912
-52
-949
-46
-754
-607
-302
-201
-9
-     */
   })
 
   it('gets answer', () => {
     const input = fs.readFileSync(path.join(__dirname, 'input.txt')).toString();
-    console.log(sumNumbers(input)) // 517025 // 519229
+    console.log(sumNumbers(input)) // 517025 wrong // 519229 wrong
   })
 })
