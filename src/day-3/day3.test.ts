@@ -4,11 +4,19 @@ const fs = require('fs')
 
 describe('day 3', () => {
   it('gets list of number, index, and length from a row', () => {
+    expect(parseNums('123.23%')).toEqual([
+      { num: 123, index: 0, length: 3 },
+      { num: 23, index: 4, length: 2 }
+    ])
     expect(parseNums('467..114..')).toEqual([
       { num: 467, index: 0, length: 3 },
       { num: 114, index: 5, length: 3 }
     ])
     expect(parseNums('...*......')).toEqual([])
+    expect(parseNums('123.123%')).toEqual([
+      { num: 123, index: 0, length: 3 },
+      { num: 123, index: 4, length: 3 }
+    ])
     expect(parseNums('..........')).toEqual([])
     expect(parseNums('***********')).toEqual([])
     expect(parseNums('1234')).toEqual([
@@ -71,6 +79,7 @@ describe('day 3', () => {
     expect(isSymbol('=')).toEqual(true)
     expect(isSymbol('-')).toEqual(true)
     expect(isSymbol('+')).toEqual(true)
+    expect(isSymbol('%')).toEqual(true)
   })
 
   it('determines has adjacent symbol', () => {
@@ -205,6 +214,14 @@ describe('day 3', () => {
       '', '..617.617', ''
     )).toEqual(false)
 
+    expect(hasAdjacentSymbol({ num: 123, index: 0, length: 3 },
+      '', '123.123%', ''
+    )).toEqual(false)
+
+    expect(hasAdjacentSymbol({ num: 123, index: 4, length: 3 },
+      '', '123.123%', ''
+    )).toEqual(true)
+
     expect(hasAdjacentSymbol({ num: 467, index: 0, length: 3 }, '', '467..114..', '...*......')).toEqual(true)
     expect(hasAdjacentSymbol({ num: 114, index: 5, length: 3 }, '', '467..114..', '...*......')).toEqual(false)
   })
@@ -226,6 +243,6 @@ describe('day 3', () => {
 
   it('gets answer', () => {
     const input = fs.readFileSync(path.join(__dirname, 'input.txt')).toString();
-    console.log(sumNumbers(input)) // 517025 wrong // 519229 wrong
+    console.log(sumNumbers(input)) // 517025 wrong // 519229 wrong //
   })
 })

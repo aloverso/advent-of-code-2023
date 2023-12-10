@@ -16,11 +16,13 @@ export const parseNums = (line: string): Num[] => {
     .filter(it => it.length > 0)
 
   let lastIndex=0
+  let lastLength=0
   const nums: Num[] = []
   for (let i=0; i<numbers.length; i++) {
     const val = numbers[i]
-    const index = line.indexOf(val, lastIndex)
+    const index = line.indexOf(val, lastIndex + lastLength)
     lastIndex = index+1
+    lastLength = val.length
     nums.push({
       num: parseInt(val),
       index: index,
